@@ -1,43 +1,62 @@
-import NextImage, { ImageLoaderProps } from 'next/image';
-import {useCallback} from 'react';
+// import { useCallback } from 'react'
+import NextImage, {
+  ImageLoaderProps,
+  ImageProps as NextImageProps,
+} from 'next/image'
 
-export type ImageProps= {
-    layout: "responsive" | "intrinsic",
-    src: string,
-    width: number,
-    height?: never,
-    aspectRatio: "1:1" | "4:3" | "16:9" | "3:2" | "9:12",
-    fit?: "crop" | "fill" | "pad" | "scale"
-  }
-  
-  export function Image({layout, src, width, aspectRatio, fit="scale"}:ImageProps) {
-    
-    //Para calcular el aspect ratio
-    const Calheight= (aspectRatio: "1:1" | "4:3" | "16:9" | "3:2" | "9:12", width: number ): number => {
-      let ratio= 0;
-  
-      if(aspectRatio === "1:1") {
-        ratio= width *1;
-      } else if(aspectRatio === "16:9") {
-        ratio= width * (9/16);
-      } else if(aspectRatio === "4:3") {
-        ratio=  width * (3/4);
-      } else if(aspectRatio === "3:2") {
-        ratio= width * (2/3);
-      } else {
-        ratio= width * (12/9);
-      }
-  
-      return Math.floor(ratio);
+type ImageProps = {
+  width: number
+  height?: never
+  layout: ImageLayout
+  aspectRatio: AspectRatio
+  fit?: ImageFit
+} & DistributiveOmit<NextImageProps, 'height'>
+
+export function Image({
+  width,
+  fit = 'scale',
+  aspectRatio,
+  ...nextImageProps
+}: ImageProps) {
+  const height = calcAspectRatio(aspectRatio, width)
+
+  const imageLoader = 
+    (loaderArgs: ImageLoaderProps) => {
+      const h = calcAspectRatio(aspectRatio, loaderArgs.width)
+
+      return `${loaderArgs.src}?w=${loaderArgs.width}&h=${h}&fit=${fit}`
     }
-  
-    const height: number= Calheight(aspectRatio, width);
-    
-    const loader= useCallback( (args: ImageLoaderProps): string => {
-  
-      const loaderHeigth= Calheight(aspectRatio, args.width)
-      return `${args.src}?w=${args.width}&h=${loaderHeigth}&fit=${fit}`;
-    }, [aspectRatio, fit])
-  
-    return <NextImage layout={layout} src={src} width={width} height={height} loader={loader} />
-  }
+
+  return (
+    <NextImage
+      {...nextImageProps}
+      width={width}
+      height={height}
+      loader={imageLoader}
+    />
+  )
+}
+
+export type ImageFit = 'pad' | 'fill' | 'scale' | 'crop' | 'thumb'
+
+export type AspectRatio = '16:9' | '4:3' | '1:1' | '3:2' | '9:12'
+
+export type ImageLayout = 'fill' | 'fixed' | 'intrinsic' | 'responsive'
+
+type DistributiveOmit<T, K extends keyof T> = T extends unknown
+  ? Omit<T, K>
+  : never
+
+const aspectRatioToRatio: Record<AspectRatio, number> = {
+  '1:1': 1,
+  '16:9': 9 / 16,
+  '4:3': 3 / 4,
+  '3:2': 2 / 3,
+  '9:12': 12 / 9,
+}
+
+function calcAspectRatio(aspectRatio: AspectRatio, width: number): number {
+  const ratio = aspectRatioToRatio[aspectRatio]
+
+  return Math.floor(width * ratio)
+}
