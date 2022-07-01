@@ -1,8 +1,11 @@
 import clsx from 'clsx'
 import { Grid } from '@ui/Grid'
 import { Typography } from '@ui/Typography'
+import { useTranslation } from 'next-i18next';
 
 export const Footer = ({ className }: { className?: string }) => {
+  
+  const translations= useTranslation(["common"]);
   return (
     <footer
       className={clsx(
@@ -25,23 +28,23 @@ export const Footer = ({ className }: { className?: string }) => {
           </Grid>
           <Grid item xs={6} sm={4}>
             <Typography variant="h5" className="mb-4">
-              Pages
+              {translations.t('pages')}
             </Typography>
             <ul className="p0">
               <li className="pb-1">
-                <a href="/getting-started">Getting started</a>
+                <a href="/getting-started">{translations.t('gettingStarted')}</a>
               </li>
               <li className="pb-1">
-                <a href="/search">Search</a>
+                <a href="/search">{translations.t('search')}</a>
               </li>
               <li className="pb-1">
-                <a href="/top-stories">Top stories</a>
+                <a href="/top-stories">{translations.t('topStories')}</a>
               </li>
             </ul>
           </Grid>
           <Grid item xs={6} sm={3}>
             <Typography variant="h5" className="mb-4">
-              About
+              {translations.t('about')}
             </Typography>
             
             <div className="mt-3">
@@ -63,7 +66,7 @@ export const Footer = ({ className }: { className?: string }) => {
         </Grid>
         <div className="mt-20 border-t-2 border-gray-600 text-gray-600 pt-6 flex justify-between">
           <p>
-            Images from
+            {translations.t('imagesFrom')}
             <a target="_blank" href="https://www.pexels.com" title="Pexels">
               Pexels
             </a>

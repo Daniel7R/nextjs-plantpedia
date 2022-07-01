@@ -1,18 +1,21 @@
 import { GetStaticProps, InferGetStaticPropsType } from 'next'
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { Layout } from '@components/Layout'
 import { PlantCollection } from '@components/PlantCollection'
 import { getPlantList } from '@api'
 import { Hero } from '@components/Hero'
+
 import { Authors } from '@components/Authors'
 
 type HomeProps= {plants: Plant[]}
 
-export const getStaticProps: GetStaticProps<HomeProps>= async() => {
-    const plants= await getPlantList({limit: 10})
+export const getStaticProps: GetStaticProps<HomeProps>= async({locale}) => {
+    const plants= await getPlantList({limit: 10, locale});
+    const i18nConf= await serverSideTranslations(locale!);
 
     return {
         props: {
-            plants
+            plants, ...i18nConf
         },
         //Indica cada cuanto debe  el servidor debe refrescar
         revalidate: 5 * 60

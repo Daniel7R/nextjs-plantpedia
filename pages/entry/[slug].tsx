@@ -4,81 +4,90 @@ import { Grid } from '@ui/Grid'
 import { RichText } from '@components/RichText'
 import { AuthorCard } from '@components/AuthorCard'
 import { getCategoryList, getPlant, getPlantList } from '@api'
-import { GetStaticProps, InferGetStaticPropsType } from 'next'
+import { GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next'
 import { PlantEntryInline } from '@components/PlantCollection'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-type PlantEntryProps= {
+type PlantEntryProps = {
     plant: Plant
-    otherEntries: Plant[] 
-    categories: Category[] 
+    otherEntries: Plant[]
+    categories: Category[]
 }
-type PathType= {
+type PathType = {
     params: {
         slug: string
-    }
+    },
+    locale: string
 }
 
-export const getStaticProps: GetStaticProps<PlantEntryProps> = async({ params, preview }) => {
-    const slug= params?.slug;
-    
-    if(typeof slug !== "string") {
+export const getStaticProps: GetStaticProps<PlantEntryProps> = async ({ params, preview, locale }) => {
+    const slug = params?.slug;
+
+    if (typeof slug !== "string") {
         return {
             notFound: true
         }
     }
 
     try {
-        const plant= await getPlant(slug, preview)
-        const otherEntries= await getPlantList({
+        const plant = await getPlant(slug, preview, locale  )
+        const otherEntries = await getPlantList({
             limit: 5
         });
-        const categories= await getCategoryList({
+        const categories = await getCategoryList({
             limit: 10
         });
-    
+
         return {
             props: {
                 plant,
                 otherEntries,
                 categories
             },
-            revalidate: 5*60
+            revalidate: 5 * 60
         }
-    } catch(e) {
+    } catch (e) {
         return {
             notFound: true
         }
     }
-} 
+}
 
-export const getStaticPaths= async() => {
-    const entries= await getPlantList({limit: 10})
+export const getStaticPaths: GetStaticPaths= async ({ locales }: any) => {
 
-    const paths: PathType[]= entries.map(entry => ({
+    if (locales === undefined) {
+        throw new Error("Did you forget to config your locales in your Next.config.js?");
+    }
+    const entries = await getPlantList({ limit: 10 })
+
+    const paths: PathType[] = entries.map(({slug}) => ({
         params: {
-            slug: entry.slug
+            slug
         }
-    }))
+    })).flatMap(path => locales.map((locale: string) => ({
+        locale, ...path
+    })))
+
+
     return {
         paths,
         fallback: true
     };
 }
 
-export default function PlantEntryPage({ 
+export default function PlantEntryPage({
     plant,
     otherEntries,
-    categories 
-}: InferGetStaticPropsType<typeof getStaticProps> ) {
+    categories
+}: InferGetStaticPropsType<typeof getStaticProps>) {
 
-    const { isFallback }= useRouter();
+    const { isFallback } = useRouter();
 
-    if(isFallback) {
+    if (isFallback) {
         //Next js is loading
-        return(<Layout>
-                <main>Loading something</main>
+        return (<Layout>
+            <main>Loading something</main>
         </Layout>)
     }
     return (
@@ -114,7 +123,7 @@ export default function PlantEntryPage({
                         </Typography>
                         <ul className='list'>
                             {
-                                categories?.map(category=> (
+                                categories?.map(category => (
                                     <li key={category.id}>
                                         <Link href={`/category/${category.slug}`}>
                                             <Typography component="a" variant="h6">
