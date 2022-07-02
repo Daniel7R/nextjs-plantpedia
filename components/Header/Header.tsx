@@ -4,8 +4,11 @@ import { NavBar } from '@ui/NavBar'
 import { Button } from '@ui/Button'
 import {TopArea } from './TopArea'
 import { PreviewModeBanner } from './PreviewModeBanner'
+import { useTranslation } from 'next-i18next'
 
 export function Header() {
+  const { t }= useTranslation(["common"])
+
   return (
     <>
       <PreviewModeBanner />
@@ -16,6 +19,7 @@ export function Header() {
         <NavBar title="🌿 Plantpedia">
           <div>
             <NavLink href="/top-stories">Top Stories</NavLink>
+            <NavLink href="/search">{t('search')}</NavLink>
           </div>
         </NavBar>
       </div>
