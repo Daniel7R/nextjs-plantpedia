@@ -4,5 +4,8 @@
     "topStories": "Top stories",
     "search": "Search",
     "about": "About",
-    "imagesFrom": "Images from "
+    "imagesFrom": "Images from ",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "language": "Language"
 }

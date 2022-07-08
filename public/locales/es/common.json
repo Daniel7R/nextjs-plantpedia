@@ -4,5 +4,8 @@
     "topStories": "Historias destacadas",
     "search": "Buscar",
     "about": "Acerca",
-    "imagesFrom": "Imágenes de "
+    "imagesFrom": "Imágenes de ",
+    "signIn": "Iniciar sesión",
+    "signOut": "Cerrar sesión",
+    "language": "Idioma"
 }
