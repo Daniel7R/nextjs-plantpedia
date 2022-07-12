@@ -34,7 +34,10 @@
       ],
       "@components/*": [
         "./components/*"
-      ]
+      ],
+      "@auth/*": [
+        "./auth/*"
+      ],
     },
     "incremental": true
   },
