@@ -46,7 +46,7 @@
     "api/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "api/query/useInfinitePlantSearch.js"  ],
   "exclude": [
     "node_modules"
   ]
