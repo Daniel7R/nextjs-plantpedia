@@ -5,11 +5,16 @@ import GithubProvider from "next-auth/providers/github";
 
 const options: NextAuthOptions= {
     theme: {
-        colorScheme: "light"
+        colorScheme: "auto"
     },
     debug: process.env.NODE_ENV === "development",
-    session: {},
-    jwt: {},
+    session: {
+        maxAge: 60 *15,
+    },
+    jwt: {
+        maxAge: 60 *15,
+        secret: process.env.AUTH_JWT_SECRET, 
+    },
     providers: [
         CredentialsProvider({
             name: "credentials",
